@@ -11,6 +11,11 @@ const removeActive = () => {
     // console.log(lessonBtns);
     
 }
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
 const loadLevelWord = (id) => {
     const url = `https://openapi.programming-hero.com/api/level/${id}`;
     fetch(url)
@@ -74,7 +79,7 @@ const displayLevelWords = (words) => {
             </div>
             <div class="flex justify-between items-center mt-10 ">
                 <button type="button" onclick="loadWordDetails(${word.id})" class="btn bg-[#1A91FF1A] text-2xl p-2.5 hover:bg-[#1A91FF88]"><i class="fa-solid fa-circle-info"></i></button>
-                <button type="button" class="btn bg-[#1A91FF1A] text-2xl p-2.5 hover:bg-[#1A91FF88]"><i class="fa-solid fa-volume-high"></i></button>
+                <button type="button" onclick="pronounceWord('${word.word}')" class="btn bg-[#1A91FF1A] text-2xl p-2.5 hover:bg-[#1A91FF88]"><i class="fa-solid fa-volume-high"></i></button>
             </div>
         </div>
         `;
@@ -97,3 +102,18 @@ const displayLessons = (lessons) => {
 
 }
 loadLesson();
+document.getElementById('btn-search').addEventListener('click',() => {
+    removeActive();
+    const input= document.getElementById('input-search');
+    const searchValue = input.value.trim().toLowerCase();
+    console.log('click search btn',searchValue);
+    fetch("https://openapi.programming-hero.com/api/words/all")
+    .then(res => res.json())
+    .then(json => {
+        const allWords = json.data;
+        const felterWords = allWords.filter((word) => word.word.toLowerCase().includes(searchValue));
+        displayLevelWords(felterWords);
+        
+    })
+    
+});
